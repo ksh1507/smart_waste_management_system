@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartBin Vision Pro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <h1>
+        <i class="fas fa-recycle"></i>
+        SmartBin Vision Pro
+        <span class="live-badge">
+          <span class="pulse"></span>
+          LIVE
+        </span>
+      </h1>
+      <div class="timestamp" id="time">--</div>
+    </header>
+
+    <div class="dashboard-grid">
+      <!-- Detection Status -->
+      <div class="card detection-card">
+        <div class="card-header">
+          <h3><i class="fas fa-radar"></i> Object Detection</h3>
+          <div class="status-indicator" id="objectStatus"></div>
+        </div>
+        <div class="sensor-visual">
+          <div class="laser-beam"></div>
+        </div>
+      </div>
+
+      <!-- Environmental Data -->
+      <div class="card moisture-card">
+        <div class="card-header">
+          <h3><i class="fas fa-droplet"></i> Moisture Level</h3>
+        </div>
+        <div class="moisture-gauge">
+          <div class="gauge-fill" id="moistureFill"></div>
+          <div class="gauge-value" id="moistureValue">--%</div>
+        </div>
+      </div>
+
+      <!-- Waste Classification -->
+      <div class="card waste-card">
+        <div class="card-header">
+          <h3><i class="fas fa-trash"></i> Waste Type</h3>
+        </div>
+        <div class="waste-display" id="wasteType">
+          <div class="waste-icon"></div>
+          <span class="waste-label">--</span>
+        </div>
+      </div>
+
+      <!-- Actuator Control -->
+      <div class="card actuator-card">
+        <div class="card-header">
+          <h3><i class="fas fa-cogs"></i> Lid Actuator</h3>
+          <div class="angle-value" id="angleVal">--°</div>
+        </div>
+        <div class="servo-visual">
+          <div class="servo-arm" id="needle"></div>
+          <div class="servo-base"></div>
+        </div>
+      </div>
+
+      <!-- Proximity Sensor -->
+      <div class="card proximity-card">
+        <div class="card-header">
+          <h3><i class="fas fa-wave-square"></i> Distance</h3>
+          <div class="distance-value" id="distanceBar">-- cm</div>
+        </div>
+        <div class="sonar-visual">
+          <div class="sonar-wave"></div>
+        </div>
+      </div>
+
+      <!-- Bin Capacity -->
+      <div class="card bin-card wet-bin">
+        <div class="bin-header">
+          <h3><i class="fas fa-water"></i> Wet Waste</h3>
+          <div class="bin-percent" id="wetText">--%</div>
+        </div>
+        <div class="bin-visual">
+          <div class="bin-fill" id="wetFill"></div>
+        </div>
+      </div>
+
+      <div class="card bin-card dry-bin">
+        <div class="bin-header">
+          <h3><i class="fas fa-leaf"></i> Dry Waste</h3>
+          <div class="bin-percent" id="dryText">--%</div>
+        </div>
+        <div class="bin-visual">
+          <div class="bin-fill" id="dryFill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Same JavaScript functionality as previous version
+    async function fetchData() {
+      const res = await fetch('/data');
+      const d = await res.json();
+
+      // Update all elements
+      document.getElementById("objectStatus").className = 
+        `status-indicator ${d.objectDetected ? 'active' : 'inactive'}`;
+      
+      document.getElementById("moistureValue").textContent = `${d.moisture}%`;
+      document.getElementById("moistureFill").style.height = `${d.moisture}%`;
+
+      const wasteDisplay = document.getElementById("wasteType");
+      wasteDisplay.className = `waste-display ${d.type.toLowerCase()}`;
+      wasteDisplay.querySelector('.waste-label').textContent = d.type;
+
+      document.getElementById("needle").style.transform = `rotate(${d.angle - 90}deg)`;
+      document.getElementById("angleVal").textContent = `${d.angle}°`;
+
+      document.getElementById("distanceBar").textContent = `${d.mainDistance} cm`;
+
+      document.getElementById("wetFill").style.height = `${d.fillWet}%`;
+      document.getElementById("wetText").textContent = `${d.fillWet}%`;
+      document.getElementById("dryFill").style.height = `${d.fillDry}%`;
+      document.getElementById("dryText").textContent = `${d.fillDry}%`;
+
+      document.getElementById("time").textContent = d.timestamp;
+    }
+
+    setInterval(fetchData, 1000);
+    window.addEventListener('DOMContentLoaded', fetchData);
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "mainDistance": 67,
+  "objectDetected": 0,
+  "moisture": null,
+  "type": "NONE",
+  "angle": 90,
+  "fillWet": 0,
+  "fillDry": 100,
+  "levelWet": 17,
+  "levelDry": 5,
+  "timestamp": "2025-04-19 08:40:43"
+}
